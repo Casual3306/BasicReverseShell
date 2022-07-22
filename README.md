@@ -13,3 +13,7 @@ python3 server.py -i -H 0.0.0.0 -p 443 -b (1024 * 998) -s "<sep>" -t 5 -p "> "
 ```
 python3 client.py 127.0.0.1
 ```
+
+### Notes
+- The client is modifiable along with the server
+- The stager should be able to, once it is on the victims machine, download the client, run the client from a specific directory, auto-terminate stager
