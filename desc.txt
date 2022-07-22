@@ -1,0 +1,5 @@
+My "modified" version of the Python server/client tutorial
+
+- Going to include my own commands and possibly a stager.
+
+Tutorial: https://www.thepythoncode.com/article/create-reverse-shell-python
